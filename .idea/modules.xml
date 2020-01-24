@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/compilationl3-public.iml" filepath="$PROJECT_DIR$/compilationl3-public.iml" />
+      <module fileurl="file://$PROJECT_DIR$/root.iml" filepath="$PROJECT_DIR$/root.iml" />
     </modules>
   </component>
 </project>

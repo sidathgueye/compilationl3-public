@@ -3,8 +3,44 @@ Package sc;
 Helpers
 
 lettre = [['a' .. 'z'] + ['A' .. 'Z']];
+chiffre = ['0' .. '9'];
+alpha = [lettre + ['_' + '$']];
+alphanum = [lettre + chiffre];
 
 Tokens
+
+ espaces = (' ' | 13 | 10)+;
+ commentaire= '#' [[0 .. 0xffff] - [10 + 13]]* (10 | 13 | 10 13);
+ virgule = ',';
+ divise = '/';
+ point_virgule = ';';
+ fois = '*';
+ moins = '-';
+ parenthese_ouvrante = '(';
+ parenthese_fermante = ')';
+ crochet_ouvrant = '[';
+ crochet_fermant = ']';
+ accolade_ouvrante = '{';
+ accolade_fermante = '}';
+ egal = '=';
+ inferieur = '<';
+ et = '&';
+ ou = '|';
+ non = '!';
+ plus = '+';
+ si = 'si';
+ alors = 'alors';
+ sinon = 'sinon';
+ tantque = 'tantque';
+ faire = 'faire';
+ entier = 'entier';
+ retour = 'retour';
+ lire = 'lire';
+ ecrire = 'ecrire';
+ nombre = chiffre+;
+ identif = alpha alphanum*;
+
+
 
 espaces = (' ' | 13 | 10)+;
 commentaire= '#' [[0 .. 0xffff] - [10 + 13]]* (10 | 13 | 10 13);
