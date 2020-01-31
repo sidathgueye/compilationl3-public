@@ -1,4 +1,3 @@
-Package sc;
 
 Helpers
 
@@ -9,189 +8,157 @@ alphanum = [lettre + chiffre];
 
 Tokens
 
- espaces = (' ' | 13 | 10)+;
- commentaire= '#' [[0 .. 0xffff] - [10 + 13]]* (10 | 13 | 10 13);
- virgule = ',';
- divise = '/';
- point_virgule = ';';
- fois = '*';
- moins = '-';
- parenthese_ouvrante = '(';
- parenthese_fermante = ')';
- crochet_ouvrant = '[';
- crochet_fermant = ']';
- accolade_ouvrante = '{';
- accolade_fermante = '}';
- egal = '=';
- inferieur = '<';
- et = '&';
- ou = '|';
- non = '!';
- plus = '+';
- si = 'si';
- alors = 'alors';
- sinon = 'sinon';
- tantque = 'tantque';
- faire = 'faire';
- entier = 'entier';
- retour = 'retour';
- lire = 'lire';
- ecrire = 'ecrire';
- nombre = chiffre+;
- identif = alpha alphanum*;
-
-
-
+espaces = (' ' | 13 | 10)+;
+commentaire= '#' [[0 .. 0xffff] - [10 + 13]]* (10 | 13 | 10 13);
+virgule = ',';
+divise = '/';
+point_virgule = ';';
+fois = '*';
+moins = '-';
+parenthese_ouvrante = '(';
+parenthese_fermante = ')';
+crochet_ouvrant = '[';
+crochet_fermant = ']';
+accolade_ouvrante = '{';
+accolade_fermante = '}';
+egal = '=';
+inferieur = '<';
+et = '&';
+ou = '|';
+non = '!';
+plus = '+';
+si = 'si';
+alors = 'alors';
+sinon = 'sinon';
+tantque = 'tantque';
+faire = 'faire';
+entier = 'entier';
+retour = 'retour';
+lire = 'lire';
+ecrire = 'ecrire';
+nombre = chiffre+;
+identif = alpha alphanum*;
 
 Ignored Tokens
 
 espaces, commentaire;
 
-
-
 Productions
 
-Program = OptDecVar ListDecFunc ;
+programme =
+{decvarldecfonc} optdecvar listedecfonc |
+{ldecfonc} listedecfonc;
 
-Program =
-{DeVarLDecFunc} OptDecVar ListDecFunc |
-{ListDecFunc} ListDecFunc;
+optdecvar = listedecvar point_virgule;
 
-OptDecVar = ListDecVar point_virgule;
+listedecvar =
+{decvarldecvar} decvar listedecvarbis |
+{decvar} decvar;
 
-ListDecVar =
-{DecVarListDecVar} DecVar ListDecVarbis |
-{DecVar} DecVar;
+listedecvarbis =
+{decvarldecvar} virgule decvar listedecvarbis|
+{decvar} virgule decvar ;
 
+decvar =
+{decvarentier} entier identif |
+{decvartableau} entier identif crochet_ouvrant nombre crochet_fermant ;
 
-ListDecVarbis =
-{DecVarListDecVar} virgule DecVar ListDecVarbis|
-{DecVar} virgule DecVar ;
+listedecfonc =
+{ldecfoncrec} decfonc listedecfonc |
+{ldecfoncfinal} ;
 
+decfonc =
+{decvarinstr} identif listeparam optdecvar instrbloc |
+{instr} identif listeparam instrbloc ;
 
-DecVar =
-{DecVarEntier} entier identif |
-{DecVarTab} entier identif crochet_ouvrant nombre crochet_fermant ;
+listeparam =
+{sansparam} parenthese_ouvrante parenthese_fermante |
+{avecparam} parenthese_ouvrante listedecvar parenthese_fermante ;
 
+instr =
+{instraffect} instraffect |
+{instrbloc } instrbloc |
+{instrsi } instrsi |
+{instrtantque } instrtantque |
+{instrappel } instrappel |
+{instrretour } instrretour |
+{instrecriture } instrecriture |
+{instrvide} instrvide ;
 
-ListDecFunc =
-{ListDecFuncRec} DecFunc ListDecFunc |
-{ListDecFuncFin} ;
+instraffect = var egal exp point_virgule ;
 
+instrbloc = accolade_ouvrante listeinst accolade_fermante ;
 
-DecFunc =
-{DecVarInst} identif listPara OptDecVar InstBloc |
-{Inst} identif listPara InstBloc ;
+//listeinst = instr*;
 
+listeinst =
+{linstrec} instr listeinst |
+{linstfinal} ;
 
-listPara =
-{SanPara} parenthese_ouvrante parenthese_fermante |
-{AvecPara} parenthese_ouvrante ListDecVar parenthese_fermante ;
+instrsi =
+{avecsinon} si exp alors instrbloc instrsinon|
+{sanssinon} si exp alors instrbloc ;
 
-Inst =
-{InstAffec} InstAffec |
-{InstBloc } InstBloc |
-{InstSi } InstSi |
-{InstTque } InstTque |
-{InstApel } InstApel |
-{InstRetour } InstRetour |
-{InstEcrit } InstEcrit |
-{InstVid} InstVid ;
+instrsinon = sinon instrbloc ;
 
+instrtantque = tantque exp faire instrbloc ;
 
-InstAffec = Var egal Exp point_virgule ;
+instrappel = appelfct point_virgule ;
 
+instrretour = retour exp point_virgule ;
 
-InstBloc = accolade_ouvrante ListInst accolade_fermante ;
+instrecriture = ecrire parenthese_ouvrante exp parenthese_fermante point_virgule ;
 
+instrvide = point_virgule ;
 
+exp =
+{ou} exp ou exp1 |
+{exp1} exp1;
 
-ListInst =
-{ListInst} Inst ListInst |
-{ListInstFin} Inst;
+exp1 =
+{et} exp1 et exp2 |
+{exp2} exp2;
 
+exp2 =
+{inf} exp2 inferieur exp3 |
+{egal} exp2 egal exp3 |
+{exp3} exp3;
 
-InstSi =
-{AvecSinon} si Exp alors InstBloc InstSinon|
-{SansSinon} si Exp alors InstBloc ;
+exp3 =
+{plus} exp3 plus exp4 |
+{moins} exp3 moins exp4 |
+{exp4} exp4 ;
 
+exp4 =
+{fois} exp4 fois exp5 |
+{divise} exp4 divise exp5 |
+{exp5} exp5 ;
 
-InstSinon = sinon InstBloc ;
+exp5 =
+{non} non exp5 |
+{exp6} exp6 ;
 
-
-InstTque = tantque Exp faire InstBloc ;
-
-
-InstApel = AppelFunc point_virgule ;
-
-
-InstRetour = retour Exp point_virgule ;
-
-
-InstEcrit = ecrire parenthese_ouvrante Exp parenthese_fermante point_virgule ;
-
-InstVid = point_virgule ;
-
-
-
-Exp =
-{ou} Exp ou Exp1 |
-{Exp1} Exp1;
-
-
-Exp1 =
-{et} Exp1 et Exp2 |
-{Exp2} Exp2;
-
-
-Exp2 =
-{inferieur} Exp2 inferieur Exp3 |
-{egal} Exp2 egal Exp3 |
-{Exp3} Exp3;
-
-
-Exp3 =
-{plus} Exp3 plus Exp4 |
-{moins} Exp3 moins Exp4 |
-{Exp4} Exp4 ;
-
-
-Exp4 =
-{fois} Exp4 fois Exp5 |
-{divise} Exp4 divise Exp5 |
-{Exp5} Exp5 ;
-
-
-Exp5 =
-{non} non Exp5 |
-{Exp6} Exp6 ;
-
-
-Exp6 =
+exp6 =
 {nombre} nombre |
-{AppelFunc} AppelFunc |
-{Var} Var |
-{parentheses} parenthese_ouvrante Exp parenthese_fermante |
+{appelfct} appelfct |
+{var} var |
+{parentheses} parenthese_ouvrante exp parenthese_fermante |
 {lire} lire parenthese_ouvrante parenthese_fermante ;
 
+//accès à une variable, case d'un tableau ou appel à fonction
 
+var =
+{vartab} identif crochet_ouvrant exp crochet_fermant |
+{varsimple} identif ;
 
-Var =
-{VarTab} identif crochet_ouvrant Exp crochet_fermant |
-{VarSimple} identif ;
+listeexp =
+{recursif} exp listeexpbis|
+{final} exp ;
 
+listeexpbis =
+{final} virgule exp |
+{recursif} virgule exp listeexpbis;
 
-ListExp =
-{recursif} Exp ListExpbis|
-{final} Exp ;
-
-
-ListExpbis =
-{final} virgule Exp |
-{recursif} virgule Exp ListExpbis;
-
-
-AppelFunc =
-{AvecParam} identif parenthese_ouvrante ListExp parenthese_fermante |
-{SanParam} identif parenthese_ouvrante parenthese_fermante ;
-
+appelfct =
+{avecparam} identif parenthese_ouvrante listeexp parenthese_fermante |
+{sansparam} identif parenthese_ouvrante parenthese_fermante ;
