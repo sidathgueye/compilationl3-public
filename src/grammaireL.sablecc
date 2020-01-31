@@ -42,14 +42,156 @@ Tokens
 
 
 
-espaces = (' ' | 13 | 10)+;
-commentaire= '#' [[0 .. 0xffff] - [10 + 13]]* (10 | 13 | 10 13);
 
 Ignored Tokens
 
 espaces, commentaire;
 
+
+
 Productions
 
-programme = optdecvar listedecfonc ;
+Program = OptDecVar ListDecFunc ;
+
+Program =
+{DeVarLDecFunc} OptDecVar ListDecFunc |
+{ListDecFunc} ListDecFunc;
+
+OptDecVar = ListDecVar point_virgule;
+
+ListDecVar =
+{DecVarListDecVar} DecVar ListDecVarbis |
+{DecVar} DecVar;
+
+
+ListDecVarbis =
+{DecVarListDecVar} virgule DecVar ListDecVarbis|
+{DecVar} virgule DecVar ;
+
+
+DecVar =
+{DecVarEntier} entier identif |
+{DecVarTab} entier identif crochet_ouvrant nombre crochet_fermant ;
+
+
+ListDecFunc =
+{ListDecFuncRec} DecFunc ListDecFunc |
+{ListDecFuncFin} ;
+
+
+DecFunc =
+{DecVarInst} identif listPara OptDecVar InstBloc |
+{Inst} identif listPara InstBloc ;
+
+
+listPara =
+{SanPara} parenthese_ouvrante parenthese_fermante |
+{AvecPara} parenthese_ouvrante ListDecVar parenthese_fermante ;
+
+Inst =
+{InstAffec} InstAffec |
+{InstBloc } InstBloc |
+{InstSi } InstSi |
+{InstTque } InstTque |
+{InstApel } InstApel |
+{InstRetour } InstRetour |
+{InstEcrit } InstEcrit |
+{InstVid} InstVid ;
+
+
+InstAffec = Var egal Exp point_virgule ;
+
+
+InstBloc = accolade_ouvrante ListInst accolade_fermante ;
+
+
+
+ListInst =
+{ListInst} Inst ListInst |
+{ListInstFin} Inst;
+
+
+InstSi =
+{AvecSinon} si Exp alors InstBloc InstSinon|
+{SansSinon} si Exp alors InstBloc ;
+
+
+InstSinon = sinon InstBloc ;
+
+
+InstTque = tantque Exp faire InstBloc ;
+
+
+InstApel = AppelFunc point_virgule ;
+
+
+InstRetour = retour Exp point_virgule ;
+
+
+InstEcrit = ecrire parenthese_ouvrante Exp parenthese_fermante point_virgule ;
+
+InstVid = point_virgule ;
+
+
+
+Exp =
+{ou} Exp ou Exp1 |
+{Exp1} Exp1;
+
+
+Exp1 =
+{et} Exp1 et Exp2 |
+{Exp2} Exp2;
+
+
+Exp2 =
+{inferieur} Exp2 inferieur Exp3 |
+{egal} Exp2 egal Exp3 |
+{Exp3} Exp3;
+
+
+Exp3 =
+{plus} Exp3 plus Exp4 |
+{moins} Exp3 moins Exp4 |
+{Exp4} Exp4 ;
+
+
+Exp4 =
+{fois} Exp4 fois Exp5 |
+{divise} Exp4 divise Exp5 |
+{Exp5} Exp5 ;
+
+
+Exp5 =
+{non} non Exp5 |
+{Exp6} Exp6 ;
+
+
+Exp6 =
+{nombre} nombre |
+{AppelFunc} AppelFunc |
+{Var} Var |
+{parentheses} parenthese_ouvrante Exp parenthese_fermante |
+{lire} lire parenthese_ouvrante parenthese_fermante ;
+
+
+
+Var =
+{VarTab} identif crochet_ouvrant Exp crochet_fermant |
+{VarSimple} identif ;
+
+
+ListExp =
+{recursif} Exp ListExpbis|
+{final} Exp ;
+
+
+ListExpbis =
+{final} virgule Exp |
+{recursif} virgule Exp ListExpbis;
+
+
+AppelFunc =
+{AvecParam} identif parenthese_ouvrante ListExp parenthese_fermante |
+{SanParam} identif parenthese_ouvrante parenthese_fermante ;
 
