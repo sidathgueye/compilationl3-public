@@ -1,8 +1,8 @@
 entier a;
 main()
 {
-a = 100;
-tantque a  faire{
+a = 10;
+tantque 2 < a  faire{
 ecrire(a);
 a = a - 1;
 }

@@ -1,0 +1,7 @@
+TABLE GLOBALE
+main	FCT	0
+procedure	FCT	2
+TABLE LOCALE : main
+TABLE LOCALE : procedure
+a	PARAM	1	0
+b	PARAM	1	1

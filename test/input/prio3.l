@@ -1,4 +1,4 @@
 main()
 {
-ecrire(1 + 2 / 3);
+ecrire(1 + 6 / 3);
 }

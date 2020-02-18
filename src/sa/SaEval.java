@@ -2,78 +2,21 @@ package sa;
 import java.util.*;
 import ts.*;
 
-
-// P -> LDEC LDEC 
-
-// DEC -> var id taille 
-// DEC -> fct id LDEC LDEC LINST 
-// DEC -> var id 
-
-// LDEC -> DEC LDEC 
-// LDEC -> null 
-
-// VAR  ->simple id 
-// VAR  ->indicee id EXP
-
-// LINST -> INST LINST 
-// LINST -> null 
-
-// INST -> aff VAR EXP 
-// INST -> si EXP LINST LINST 
-// INST -> tq EXP LINST 
-// INST -> app APP 
-// INST -> ret EXP 
-// INST -> ecr EXP 
-
-// APP -> id LEXP 
-
-// LEXP -> EXP LEXP 
-// LEXP -> null 
-
-// EXP -> op2 EXP EXP 
-// EXP -> op1 EXP 
-// EXP -> VAR 
-// EXP -> entier 
-// EXP -> APP 
-// EXP -> lire
-
-
-//**********
-
-// VAR  ->simple id 
-// VAR  ->indicee id EXP
-
-// LINST -> INST LINST 
-// LINST -> null 
-
-// INST -> aff VAR EXP 
-// INST -> si EXP LINST LINST 
-// INST -> tq EXP LINST 
-// INST -> app APP 
-// INST -> ecr EXP 
-
-// APP -> id LEXP 
-
-// LEXP -> EXP LEXP 
-// LEXP -> null 
-
-
-// EXP -> op1 EXP 
-// EXP -> VAR 
-
-// EXP -> lire
-
-
 public class SaEval extends SaDepthFirstVisitor <Integer> {
     private Ts tableGlobale;
-    private Ts tableLocaleCourante;
-
+    private SaEnvironment curEnv;
+    private int[] varGlob;
+    
     public SaEval(SaNode root, Ts tableGlobale){
 	this.tableGlobale = tableGlobale;
-	this.tableLocaleCourante = null;
-	root.accept(this);
-    }
+	curEnv = null;
+	varGlob = new int[tableGlobale.nbVar()];
 
+	SaAppel appelMain = new SaAppel("main", null);
+	appelMain.tsItem = tableGlobale.getFct("main");
+	
+	appelMain.accept(this);
+    }
     
     public void defaultIn(SaNode node)
     {
@@ -119,9 +62,9 @@ public class SaEval extends SaDepthFirstVisitor <Integer> {
     public Integer visit(SaExpVar node)
     {
 	defaultIn(node);
-	node.getVar().accept(this);
+	int val = node.getVar().accept(this);
 	defaultOut(node);
-	return 1;
+	return val;
     }
     
     public Integer visit(SaInstEcriture node)
@@ -175,8 +118,27 @@ public class SaEval extends SaDepthFirstVisitor <Integer> {
     public Integer visit(SaInstAffect node)
     {
 	defaultIn(node);
-	node.getLhs().accept(this);
-	node.getRhs().accept(this);
+	int val = node.getRhs().accept(this);
+	
+
+	if(node.getLhs() instanceof SaVarIndicee){ // c'est une case de tableau, donc forcément globale
+	    SaVarIndicee lhsIndicee = (SaVarIndicee) node.getLhs();
+	    int indice = lhsIndicee.getIndice().accept(this);
+	    int base = lhsIndicee.tsItem.adresse;
+	    varGlob[base + indice] = val;
+	}
+	else{// lhs est une variable simple, trois cas possibles : une variable locale, une variable globale ou un argument
+	    SaVarSimple lhsSimple = (SaVarSimple) node.getLhs();
+	    if(lhsSimple.tsItem.portee == this.tableGlobale){ // variable globale
+		varGlob[lhsSimple.tsItem.adresse] = val;
+	    }
+	    else if(lhsSimple.tsItem.isParam){ // parametre
+		curEnv.setArg(lhsSimple.tsItem.adresse, val);
+	    }
+	    else { // variable locale
+		curEnv.setVar(lhsSimple.tsItem.adresse, val);
+	    }
+	}
 	defaultOut(node);
 	return 1;
     }
@@ -195,24 +157,61 @@ public class SaEval extends SaDepthFirstVisitor <Integer> {
     public Integer visit(SaVarSimple node)
     {
 	defaultIn(node);
+	int val = 0;
+
+	if(node.tsItem.portee == this.tableGlobale){ // variable globale
+	    val = varGlob[node.tsItem.adresse];
+	}
+	else if(node.tsItem.isParam){ // parametre
+	    val = curEnv.getArg(node.tsItem.adresse);
+	}
+	else { // variable locale
+	    val = curEnv.getVar(node.tsItem.adresse);
+	}
+	
 	defaultOut(node);
-	return 1;
+	return val;
     }
     
     public Integer visit(SaAppel node)
     {
 	defaultIn(node);
-	if(node.getArguments() != null) node.getArguments().accept(this);
+	TsItemFct fct = node.tsItem;
+	SaLExp lArgs = null;
+	SaLExp l;
+	Ts localTable = fct.getTable();
+	int i = 0;
+	SaEnvironment newEnv = new SaEnvironment(node.tsItem);
+
+	//	localTable.affiche(System.out);
+
+	for(lArgs = node.getArguments(); lArgs != null; lArgs = lArgs.getQueue()){
+	    int val = lArgs.getTete().accept(this);
+	    newEnv.setArg(i, val);
+	    i++;
+	}
+	//sauvegarde de l'environnement courant pour le restaurer après l'appel
+	SaEnvironment oldEnv = curEnv;
+	// le nouvel environnement devient l'environnement courant
+	curEnv = newEnv;
+	// on exécute le corps de la fonction
+	if(fct.saDecFonc.getCorps() != null)
+	    fct.saDecFonc.getCorps().accept(this);
+
+	int returnValue = curEnv.getReturnValue();
+	
+	//restauration de l'environnement d'avant appel
+	curEnv = oldEnv;
 	defaultOut(node);
-	return 1;
+	return returnValue;
     }
     
     public Integer visit(SaExpAppel node)
     {
 	defaultIn(node);
-	node.getVal().accept(this);
+	int val = node.getVal().accept(this);
 	defaultOut(node);
-	return 1;
+	return val;
     }
 
     // EXP -> add EXP EXP
@@ -252,7 +251,7 @@ public class SaEval extends SaDepthFirstVisitor <Integer> {
 	int op1 = node.getOp1().accept(this);
 	int op2 = node.getOp2().accept(this);
 	defaultOut(node);
-	return 1;
+	return (int)(op1 / op2);
     }
     
     // EXP -> inf EXP EXP
@@ -338,7 +337,7 @@ public class SaEval extends SaDepthFirstVisitor <Integer> {
     public Integer visit(SaInstRetour node)
     {
 	defaultIn(node);
-	node.getVal().accept(this);
+	curEnv.setReturnValue(node.getVal().accept(this));
 	defaultOut(node);
 	return 1;
     }
@@ -353,12 +352,15 @@ public class SaEval extends SaDepthFirstVisitor <Integer> {
 	defaultOut(node);
 	return 1;
     }
+
     public Integer visit(SaVarIndicee node)
     {
 	defaultIn(node);
 	node.getIndice().accept(this);
+	int indice = node.getIndice().accept(this);
+	int base = node.tsItem.adresse;
 	defaultOut(node);
-	return 1;
+	return varGlob[base + indice];
     }
     
 }
