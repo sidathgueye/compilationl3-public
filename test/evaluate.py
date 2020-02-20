@@ -200,6 +200,7 @@ if __name__ == "__main__" :
 
   saEvaluation = evaluateSa(inputFiles)
   tsEvaluation = evaluateDiff(inputFiles, ".ts", "ts-ref/", "Table des Symboles")
+  c3aEvaluation = evaluateDiff(inputFiles, ".c3a", "c3a-ref/", "Code 3 Adresses")
 
   useColor = True
 
@@ -208,5 +209,6 @@ if __name__ == "__main__" :
 
   printEvaluationResult(sys.stdout, saEvaluation, useColor)
   printEvaluationResult(sys.stdout, tsEvaluation, useColor)
+  printEvaluationResult(sys.stdout, c3aEvaluation, useColor)
 ################################################################################
 

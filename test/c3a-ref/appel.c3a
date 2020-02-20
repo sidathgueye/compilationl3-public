@@ -1,0 +1,10 @@
+procedure	fbegin	#entree fonction
+	t0 = a + b
+	ret t0
+	fend
+main	fbegin	#entree fonction
+	param 1
+	param 2
+	t1 = call procedure
+	write t1	
+	fend
