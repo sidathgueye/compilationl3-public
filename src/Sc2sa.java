@@ -3,11 +3,8 @@ import sc.analysis.DepthFirstAdapter;
 
 
 import sc.node.*;
-//import ts.*;
-//import ts.TsItemFct;
-//import ts.TsItemVar;
 
-public class Sc2sa extends DepthFirstAdapter {
+public class Sc2sa extends DepthFirstAdapter{
 
     private SaNode returnValue;
 
