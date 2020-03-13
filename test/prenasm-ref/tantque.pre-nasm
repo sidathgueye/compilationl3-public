@@ -1,0 +1,24 @@
+	call	main	;
+	mov	ebx,	0	; valeur de retour du programme
+	mov	eax,	1	;
+	int 0x80	;
+main :	push	ebp	;sauvegarde la valeur de ebp
+	mov	ebp,	esp	;nouvelle valeur de ebp
+	sub	esp,	0	;allocation des variables locales
+	mov	dword [a],	10	;Affect
+l0 :	mov	r0,	1	;Affect
+	mov	r4,	2	;JumpIfLess 1
+	cmp	r4,	dword [a]	;on passe par un registre temporaire
+	jl	l2	;JumpIfLess 2
+	mov	r0,	0	;Affect
+l2 :	cmp	r0,	0	;JumpIfEqual 1
+	je	l1	;JumpIfEqual 2
+	mov	eax,	dword [a]	;Write 1
+	call	iprintLF	;Write 2
+	mov	r1,	dword [a]	;
+	sub	r1,	1	;
+	mov	dword [a],	r1	;Affect
+	jmp	l0	;Jump
+l1 :	add	esp,	0	;désallocation des variables locales
+	pop	ebp	;restaure la valeur de ebp
+	ret	;
