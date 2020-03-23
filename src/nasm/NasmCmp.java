@@ -3,8 +3,8 @@ package nasm;
 public class NasmCmp extends NasmInst {
     
     public NasmCmp(NasmOperand label, NasmOperand destination, NasmOperand source, String comment){
-	destination.use = true;
-	source.use = true;
+	destUse = true;
+	srcUse= true;
 	this.label = label;
 	this.destination = destination;
 	this.source = source;

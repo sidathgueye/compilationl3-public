@@ -5,9 +5,9 @@ public class NasmOr extends NasmInst {
     public NasmOperand source;
     
     public NasmOr(NasmOperand label, NasmOperand destination, NasmOperand source, String comment){
-	destination.use = true;
-	destination.def = true;
-	source.use = true;
+	destUse = true;
+	destDef = true;
+	srcUse = true;
 	this.label = label;
 	this.destination = destination;
 	this.source = source;

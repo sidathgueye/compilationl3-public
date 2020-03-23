@@ -1,18 +1,10 @@
 package nasm;
 
 public class NasmMul extends NasmInst {
-
-    public NasmMul(NasmOperand label, NasmOperand source, String comment){
-	source.use = true;
-	this.label = label;
-	this.source = source;
-	this.comment = comment;
-    }
-
     public NasmMul(NasmOperand label, NasmOperand destination, NasmOperand source, String comment){
-	destination.use = true;
-	destination.def = true;
-	source.use = true;
+	destUse = true;
+	destDef = true;
+	srcUse = true;
 	this.label = label;
 	this.destination = destination;
 	this.source = source;

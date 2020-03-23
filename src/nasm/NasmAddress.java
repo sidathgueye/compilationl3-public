@@ -21,10 +21,20 @@ public class NasmAddress extends NasmOperand {
     public String toString(){
 	//	return "address";
 	if(this.offset != null)
-	    return "dword [" + this.base + this.direction + "4*" + this.offset + "]";
-	return "dword [" + this.base + "]";
+	    // la multiplication par 4 pour passer en octets n'est effectuée que maintenant afin de
+	    // traiter de la même façon les indices de tableaux et les adresses relatives
+	    // c'est pas terrible !
+	    return "" + this.base + this.direction + "4*" + this.offset;
+	//	    return "dword [" + this.base + this.direction + "4*" + this.offset + "]";
+	return "" + this.base;
+	//	return "dword [" + this.base + "]";
 	
     }
+
+    public boolean isGeneralRegister(){
+	return false;
+    }
+    
     /*
 
 

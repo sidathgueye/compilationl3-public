@@ -3,7 +3,7 @@ package nasm;
 public class NasmDiv extends NasmInst {
     
     public NasmDiv(NasmOperand label, NasmOperand source, String comment){
-	source.use = true;
+	srcUse = true;
 	this.label = label;
 	this.source = source;
 	this.comment = comment;

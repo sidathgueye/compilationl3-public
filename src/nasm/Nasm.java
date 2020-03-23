@@ -35,12 +35,14 @@ public class Nasm{
 	}
 	
 	//	if(inst instanceof NasmCmp && inst.destination instanceof NasmConstant && inst.source instanceof NasmConstant){
-	if(inst instanceof NasmCmp && inst.destination instanceof NasmConstant){
-	    NasmRegister newReg = newRegister();
-	    this.listeInst.add(new NasmMov(inst.label, newReg, inst.destination, inst.comment)); 
-	    this.listeInst.add(new NasmCmp(inst.label, newReg, inst.source, "on passe par un registre temporaire"));
-	    return;
-	}
+	if(inst instanceof NasmCmp
+	   && (inst.destination instanceof NasmConstant
+	       || (inst.destination instanceof NasmAddress && inst.source instanceof NasmAddress))){
+		NasmRegister newReg = newRegister();
+		this.listeInst.add(new NasmMov(inst.label, newReg, inst.destination, inst.comment)); 
+		this.listeInst.add(new NasmCmp(inst.label, newReg, inst.source, "on passe par un registre temporaire"));
+		return;
+	    }
 	
 	this.listeInst.add(inst);
     }

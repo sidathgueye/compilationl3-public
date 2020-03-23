@@ -3,7 +3,7 @@ package nasm;
 public class NasmPush extends NasmInst {
     
     public NasmPush(NasmOperand label, NasmOperand source, String comment){
-	source.use = true;
+	srcUse = true;
 	this.label = label;
 	this.source = source;
 	this.comment = comment;

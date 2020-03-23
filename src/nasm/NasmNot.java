@@ -3,8 +3,8 @@ package nasm;
 public class NasmNot extends NasmInst {
     
     public NasmNot(NasmOperand label, NasmOperand destination, String comment){
-	destination.use = true;
-	destination.def = true;
+	destUse = true;
+	destDef = true;
 	this.label = label;
 	this.destination = destination;
 	this.comment = comment;

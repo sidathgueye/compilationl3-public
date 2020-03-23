@@ -3,10 +3,8 @@ package nasm;
 public class NasmMov extends NasmInst {
     
     public NasmMov(NasmOperand label, NasmOperand destination, NasmOperand source, String comment){
-	destination.def = true;
-	destination.use = false;
-	source.use = true;
-	source.def = false;
+	destDef = true;
+	srcUse = true;
 	this.label = label;
 	this.destination = destination;
 	this.source = source;
