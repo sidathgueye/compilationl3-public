@@ -1,0 +1,5 @@
+main	fbegin	#entree fonction
+	t0 = 3 * 10
+	t1 = 1 - t0
+	write t1	
+	fend

@@ -1,0 +1,5 @@
+main	fbegin	#entree fonction
+	t0 = 6 / 3
+	t1 = 3 - t0
+	write t1	
+	fend

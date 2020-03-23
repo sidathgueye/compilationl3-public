@@ -1,0 +1,4 @@
+main	fbegin	#entree fonction
+	t[5] = 123
+	write t[5]	
+	fend
