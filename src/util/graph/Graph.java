@@ -68,4 +68,7 @@ public class Graph {
 	}
      }
 
+    public void addNOEdge(Node n1, Node n2) {
+
+    }
 }

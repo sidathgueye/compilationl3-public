@@ -16,13 +16,9 @@ public class Sa2c3a extends SaDepthFirstVisitor<C3aOperand> {
         root.accept(this);
     }
 
-    private TsItemVar getVar(String name){
-
-        if(this.currentTable.getVar(name) != null){
-            return this.currentTable.getVar(name);
-        } else{
-            return this.table.getVar(name);
-        }
+    private TsItemVar getVar(String name) {
+        var variable = this.currentTable.getVar(name);
+        return variable != null ? variable : this.table.getVar(name);
     }
 
     @Override
@@ -64,7 +60,7 @@ public class Sa2c3a extends SaDepthFirstVisitor<C3aOperand> {
     @Override
     public C3aOperand visit(SaDecFonc node){
         TsItemFct fct = table.getFct(node.getNom());
-        C3aInstFBegin begin = new C3aInstFBegin(fct,"entree fonction");
+        C3aInstFBegin begin = new C3aInstFBegin(fct,"");
         c3a.ajouteInst(begin);
         this.currentTable = this.table.getTableLocale(node.getNom());
         if(node.getCorps() != null)

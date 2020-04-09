@@ -12,7 +12,7 @@ public class Ig {
     public FgSolution fgs;
     public int regNb;
     public Nasm nasm;
-    public Node int2Node[];
+    public Node[] int2Node;
 
     
     public Ig(FgSolution fgs){
@@ -24,12 +24,16 @@ public class Ig {
 	this.build();
     }
 
-    public void construction(){
+	private void build() {
+	}
+
+	public void construction(){
     }
 
-    public int[] getPrecoloredTemporaries()
-    {
-    }
+    public int[] getPrecoloredTemporaries(){
+			int[] tmp = new int[0];
+    return tmp;
+	}
 
 
     public void allocateRegisters(){
